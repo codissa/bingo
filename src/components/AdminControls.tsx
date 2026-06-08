@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { FirebaseGameStateService as svc } from '../services/FirebaseGameStateService'
 import type { GameState } from '../types/gameState'
 import GlassCard from './ui/GlassCard'
@@ -53,10 +53,14 @@ function Toggle({
   )
 }
 
+/** How long the field waits after the last keystroke before writing. */
+const COMMIT_DEBOUNCE_MS = 800
+
 /**
- * A text field whose value lives locally while typing and is pushed to
- * Firestore on blur (so we don't write on every keystroke). Re-syncs if the
- * remote value changes from elsewhere.
+ * A text field whose value lives locally while typing. It pushes to Firestore
+ * a short pause after typing stops (debounced) and immediately on blur — never
+ * on every keystroke. No-op writes are skipped so we don't waste Firestore
+ * quota. Re-syncs if the remote value changes from elsewhere.
  */
 function SyncedField({
   label,
@@ -70,7 +74,41 @@ function SyncedField({
   multiline?: boolean
 }) {
   const [value, setValue] = useState(remoteValue)
-  useEffect(() => setValue(remoteValue), [remoteValue])
+
+  // Last value we've either received from remote or written, so we never
+  // commit a no-op (which would burn a write + a read for every viewer).
+  const lastSyncedRef = useRef(remoteValue)
+
+  // Keep the latest onCommit without making it an effect dependency — the
+  // parent passes a fresh arrow each render and re-renders on every snapshot,
+  // which would otherwise reset the debounce timer mid-type.
+  const onCommitRef = useRef(onCommit)
+  useEffect(() => {
+    onCommitRef.current = onCommit
+  })
+
+  // Re-sync when the remote value changes from elsewhere.
+  useEffect(() => {
+    setValue(remoteValue)
+    lastSyncedRef.current = remoteValue
+  }, [remoteValue])
+
+  // Debounced auto-commit while typing.
+  useEffect(() => {
+    if (value === lastSyncedRef.current) return
+    const id = setTimeout(() => {
+      lastSyncedRef.current = value
+      onCommitRef.current(value)
+    }, COMMIT_DEBOUNCE_MS)
+    return () => clearTimeout(id)
+  }, [value])
+
+  // Flush immediately on blur (covers leaving before the debounce fires).
+  const commitNow = () => {
+    if (value === lastSyncedRef.current) return
+    lastSyncedRef.current = value
+    onCommitRef.current(value)
+  }
 
   const cls =
     'w-full rounded-xl border border-white/15 bg-black/30 px-3 py-2 text-white outline-none focus:border-neon-purple'
@@ -83,14 +121,14 @@ function SyncedField({
           rows={2}
           value={value}
           onChange={(e) => setValue(e.target.value)}
-          onBlur={() => onCommit(value)}
+          onBlur={commitNow}
           className={cls}
         />
       ) : (
         <input
           value={value}
           onChange={(e) => setValue(e.target.value)}
-          onBlur={() => onCommit(value)}
+          onBlur={commitNow}
           className={cls}
         />
       )}

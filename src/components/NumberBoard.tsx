@@ -14,6 +14,8 @@ interface NumberBoardProps {
   onRemove?: (n: number) => void
   /** Smaller, denser tiles for the TV/display board. */
   compact?: boolean
+  /** Even denser tiles + sticky letters for the phone viewer (fit more on screen). */
+  dense?: boolean
 }
 
 const LETTER_COLORS = ['text-neon-pink', 'text-neon-purple', 'text-neon-blue', 'text-neon-green', 'text-neon-yellow']
@@ -32,17 +34,20 @@ export default function NumberBoard({
   onCall,
   onRemove,
   compact = false,
+  dense = false,
 }: NumberBoardProps) {
   const called = new Set(calledNumbers)
+  const gap = dense ? 'gap-1' : 'gap-1.5 sm:gap-2'
 
   return (
-    <div className="grid grid-cols-5 gap-1.5 sm:gap-2">
+    <div className={`grid grid-cols-5 ${gap}`}>
       {BINGO_COLUMNS.map((column, ci) => (
-        <div key={column.letter} className="flex flex-col gap-1.5 sm:gap-2">
-          {/* Column letter header */}
+        <div key={column.letter} className={`flex flex-col ${gap}`}>
+          {/* Column letter header — sticky so it stays pinned while numbers scroll under it.
+              Opaque backdrop masks the numbers passing underneath. */}
           <div
-            className={`flex items-center justify-center rounded-lg bg-white/5 font-display font-extrabold ${
-              compact ? 'py-1 text-xl' : 'py-1.5 text-2xl sm:text-3xl'
+            className={`sticky top-0 z-20 flex items-center justify-center rounded-lg bg-ink/95 font-display font-extrabold backdrop-blur-sm ${
+              compact || dense ? 'py-1 text-xl' : 'py-1.5 text-2xl sm:text-3xl'
             } ${LETTER_COLORS[ci]}`}
           >
             {column.letter}
@@ -72,8 +77,9 @@ export default function NumberBoard({
                     }
                   : {})}
                 className={[
-                  'relative flex aspect-square items-center justify-center rounded-lg font-bold tabular-nums transition',
-                  compact ? 'text-sm sm:text-base' : 'text-sm sm:text-lg',
+                  'relative flex items-center justify-center rounded-lg font-bold tabular-nums transition',
+                  dense ? 'h-9 sm:h-10' : 'aspect-square',
+                  dense ? 'text-xs sm:text-sm' : compact ? 'text-sm sm:text-base' : 'text-sm sm:text-lg',
                   interactive ? 'cursor-pointer' : 'cursor-default',
                   isCurrent
                     ? 'bg-gradient-to-br from-neon-pink to-neon-purple text-white shadow-neon-pink ring-2 ring-white/70'

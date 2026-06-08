@@ -5,7 +5,7 @@ import NumberBoard from '../components/NumberBoard'
 import PrizeCard from '../components/PrizeCard'
 import WinConditionCard from '../components/WinConditionCard'
 import SpecialMessageCard from '../components/SpecialMessageCard'
-import StickerPopup from '../components/StickerPopup'
+import RevealOverlay from '../components/RevealOverlay'
 import Confetti from '../components/Confetti'
 import StatusBanners from '../components/StatusBanners'
 import LoadingState from '../components/LoadingState'
@@ -63,7 +63,8 @@ export default function DisplayPage() {
       </div>
 
       <Confetti trigger={state.animationNonce} intensity="big" />
-      <StickerPopup
+      <RevealOverlay
+        currentNumber={state.currentNumber}
         activeSticker={state.activeSticker}
         stickers={state.stickers}
         animationNonce={state.animationNonce}
