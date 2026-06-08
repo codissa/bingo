@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { getStickerById, type StickerConfig } from '../config/stickers'
 import { STICKER_DURATION_MS } from '../config/gameConfig'
 import { letterFor } from '../lib/bingo'
+import { usePreloadImages } from '../lib/usePreloadImages'
 
 interface RevealOverlayProps {
   currentNumber: number | null
@@ -39,7 +40,13 @@ export default function RevealOverlay({
 }: RevealOverlayProps) {
   const [reveal, setReveal] = useState<Reveal | null>(null)
   const [imgFailed, setImgFailed] = useState(false)
+  const [imgLoaded, setImgLoaded] = useState(false)
   const lastNonce = useRef<number | null>(null)
+
+  // Warm the browser cache for every sticker image in the live config, so a
+  // reveal paints instantly instead of fetching on-demand. Covers stickers
+  // added later from the Admin screen automatically.
+  usePreloadImages(stickers)
   const prevNumber = useRef<number | null>(null)
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -65,6 +72,7 @@ export default function RevealOverlay({
     if (revealNumber == null && !sticker) return
 
     setImgFailed(false)
+    setImgLoaded(false)
     setReveal({ number: revealNumber, sticker })
     if (timer.current) clearTimeout(timer.current)
     timer.current = setTimeout(
@@ -104,9 +112,22 @@ export default function RevealOverlay({
                 >
                   {useImage ? (
                     <img
+                      // If the image is already cached (the usual case once
+                      // preloaded), onLoad may fire before React attaches its
+                      // handler — so check `complete` on mount too, else it'd
+                      // stay invisible forever.
+                      ref={(el) => {
+                        if (el?.complete) setImgLoaded(true)
+                      }}
                       src={sticker.image}
                       alt={sticker.label}
+                      decoding="async"
+                      onLoad={() => setImgLoaded(true)}
                       onError={() => setImgFailed(true)}
+                      style={{
+                        opacity: imgLoaded ? 1 : 0,
+                        transition: 'opacity 150ms ease-out',
+                      }}
                       className={`object-contain drop-shadow-[0_0_30px_rgba(168,85,247,0.6)] ${
                         huge ? 'h-64 w-64' : 'h-36 w-36 sm:h-44 sm:w-44'
                       }`}

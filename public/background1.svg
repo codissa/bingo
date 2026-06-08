@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 800" width="1280" height="800" preserveAspectRatio="xMidYMid slice">
+  <!-- PLACEHOLDER festive camp night scene. Replace public/background.svg
+       (or drop a photo as public/background.jpg and update Background.tsx). -->
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0c0a2a"/>
+      <stop offset="55%" stop-color="#160f33"/>
+      <stop offset="100%" stop-color="#070617"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="800" fill="url(#sky)"/>
+  <!-- stars -->
+  <g fill="#ffffff" opacity="0.7">
+    <circle cx="120" cy="90" r="2"/><circle cx="300" cy="60" r="1.5"/><circle cx="520" cy="120" r="2"/>
+    <circle cx="760" cy="70" r="1.5"/><circle cx="980" cy="110" r="2"/><circle cx="1140" cy="60" r="1.5"/>
+    <circle cx="200" cy="200" r="1.5"/><circle cx="640" cy="180" r="2"/><circle cx="1060" cy="220" r="1.5"/>
+    <circle cx="420" cy="240" r="1.5"/><circle cx="880" cy="260" r="2"/>
+  </g>
+  <!-- moon glow -->
+  <circle cx="1050" cy="170" r="60" fill="#fde047" opacity="0.12"/>
+  <circle cx="1050" cy="170" r="34" fill="#fde047" opacity="0.18"/>
+  <!-- distant hills -->
+  <path d="M0 560 Q 320 460 640 540 T 1280 520 L 1280 800 L 0 800 Z" fill="#1a1340" opacity="0.8"/>
+  <path d="M0 640 Q 360 560 720 630 T 1280 610 L 1280 800 L 0 800 Z" fill="#120d2e"/>
+  <!-- pine trees silhouette -->
+  <g fill="#0a0820">
+    <path d="M160 700 l 34 -120 l 34 120 z"/><path d="M170 660 l 24 -80 l 24 80 z"/>
+    <path d="M980 710 l 40 -140 l 40 140 z"/><path d="M992 664 l 28 -92 l 28 92 z"/>
+    <path d="M560 720 l 30 -104 l 30 104 z"/>
+  </g>
+</svg>

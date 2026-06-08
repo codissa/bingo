@@ -12,6 +12,12 @@
 //   1. Drop an image into  public/stickers/   (png / jpg / gif / svg)
 //   2. Set the sticker's `image` to e.g. '/stickers/akela-dab.png'
 //   3. If the image is missing, the `emoji` shows as a fallback.
+//
+// Every sticker image is preloaded into the browser cache up front (see
+// usePreloadImages) so reveals are instant — added stickers are picked up
+// automatically. Loading is handled, but KEEP UPLOADS SMALL: a multi-MB photo
+// still costs bandwidth on first page load. Aim for a few hundred KB max and
+// a display size around 256px; SVGs are ideal (~1 KB).
 // ---------------------------------------------------------------------------
 
 /** How a sticker is allowed to fire. */

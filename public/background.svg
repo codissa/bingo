@@ -1,31 +1,155 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 800" width="1280" height="800" preserveAspectRatio="xMidYMid slice">
-  <!-- PLACEHOLDER festive camp night scene. Replace public/background.svg
-       (or drop a photo as public/background.jpg and update Background.tsx). -->
+<svg xmlns="http://www.w3.org/2000/svg" width="1816" height="1284" viewBox="0 0 1816 1284" role="img" aria-label="Warm vector background inspired by a Jaffa church courtyard with scout references">
   <defs>
-    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#0c0a2a"/>
-      <stop offset="55%" stop-color="#160f33"/>
-      <stop offset="100%" stop-color="#070617"/>
+    <linearGradient id="paper" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f8efe2"/>
+      <stop offset="0.48" stop-color="#fbf6ec"/>
+      <stop offset="1" stop-color="#eadcc7"/>
     </linearGradient>
+    <radialGradient id="sunGlow" cx="48%" cy="20%" r="65%">
+      <stop offset="0" stop-color="#fffaf1" stop-opacity="1"/>
+      <stop offset="0.7" stop-color="#f3e6d3" stop-opacity="0.7"/>
+      <stop offset="1" stop-color="#dec8a6" stop-opacity="0.45"/>
+    </radialGradient>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8"/>
+    </filter>
+    <style>
+      .line{fill:none;stroke:#b08b55;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;opacity:.72}
+      .thin{fill:none;stroke:#b08b55;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;opacity:.48}
+      .wash{fill:#dcc79e;opacity:.22}
+      .leaf{fill:#9aa078;opacity:.52}
+      .leaf2{fill:#6f7d58;opacity:.34}
+      .dark{fill:#6d6747;opacity:.48}
+      .scout{fill:none;stroke:#8f6d3e;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;opacity:.82}
+    </style>
   </defs>
-  <rect width="1280" height="800" fill="url(#sky)"/>
-  <!-- stars -->
-  <g fill="#ffffff" opacity="0.7">
-    <circle cx="120" cy="90" r="2"/><circle cx="300" cy="60" r="1.5"/><circle cx="520" cy="120" r="2"/>
-    <circle cx="760" cy="70" r="1.5"/><circle cx="980" cy="110" r="2"/><circle cx="1140" cy="60" r="1.5"/>
-    <circle cx="200" cy="200" r="1.5"/><circle cx="640" cy="180" r="2"/><circle cx="1060" cy="220" r="1.5"/>
-    <circle cx="420" cy="240" r="1.5"/><circle cx="880" cy="260" r="2"/>
+
+  <rect width="1816" height="1284" fill="url(#paper)"/>
+  <rect width="1816" height="1284" fill="url(#sunGlow)"/>
+
+  <!-- soft decorative clouds / empty space for content -->
+  <g opacity=".28" fill="#ead5bb">
+    <path d="M0 0H430C380 65 332 72 302 120c-34 54-15 96-73 122-60 27-136 2-183 46-33 31-33 73-46 108Z"/>
+    <path d="M815 1120c64-104 131-133 211-124 61 7 83-64 158-63 89 2 110 73 178 79 77 6 124-39 196 4 57 34 71 80 88 104Z"/>
+    <path d="M1212 622c44-16 83 5 101 47 45-31 102-18 126 30 55-18 103 16 110 69H1094c20-66 63-104 118-146Z"/>
   </g>
-  <!-- moon glow -->
-  <circle cx="1050" cy="170" r="60" fill="#fde047" opacity="0.12"/>
-  <circle cx="1050" cy="170" r="34" fill="#fde047" opacity="0.18"/>
-  <!-- distant hills -->
-  <path d="M0 560 Q 320 460 640 540 T 1280 520 L 1280 800 L 0 800 Z" fill="#1a1340" opacity="0.8"/>
-  <path d="M0 640 Q 360 560 720 630 T 1280 610 L 1280 800 L 0 800 Z" fill="#120d2e"/>
-  <!-- pine trees silhouette -->
-  <g fill="#0a0820">
-    <path d="M160 700 l 34 -120 l 34 120 z"/><path d="M170 660 l 24 -80 l 24 80 z"/>
-    <path d="M980 710 l 40 -140 l 40 140 z"/><path d="M992 664 l 28 -92 l 28 92 z"/>
-    <path d="M560 720 l 30 -104 l 30 104 z"/>
+
+  <!-- right tree canopy -->
+  <g transform="translate(1295 5)">
+    <path class="leaf" d="M195 0c134 17 232 94 302 207v342c-58-20-111-55-165-89-92-58-178-28-260-84C12 336-2 247 39 187 70 140 119 138 125 81c3-32 23-57 70-81Z"/>
+    <path class="leaf2" d="M297 57c75 35 131 91 171 168 24 47 18 113 37 169v284c-73-73-147-121-229-142-85-21-153-7-204-59 74-8 118-56 139-123 21-69-4-127 34-191 20-34 42-67 52-106Z"/>
+    <g class="dark">
+      <path d="M330 72c-9 172-19 344-28 516-3 64-4 128-4 193h30c-7-231 6-463 38-693Z"/>
+      <path d="M360 328c79 37 146 82 203 139l-19 21c-57-56-124-105-202-146Z"/>
+      <path d="M334 505c63 62 113 132 151 211l-25 14c-39-81-89-149-149-205Z"/>
+    </g>
+    <g class="leaf2">
+      <ellipse cx="138" cy="166" rx="56" ry="31" transform="rotate(-28 138 166)"/>
+      <ellipse cx="196" cy="246" rx="67" ry="32" transform="rotate(20 196 246)"/>
+      <ellipse cx="94" cy="319" rx="70" ry="35" transform="rotate(-8 94 319)"/>
+      <ellipse cx="283" cy="315" rx="75" ry="38" transform="rotate(-24 283 315)"/>
+      <ellipse cx="385" cy="420" rx="82" ry="38" transform="rotate(16 385 420)"/>
+      <ellipse cx="194" cy="490" rx="76" ry="34" transform="rotate(12 194 490)"/>
+    </g>
+  </g>
+
+  <!-- church facade outline -->
+  <g transform="translate(10 235)">
+    <path class="wash" d="M0 495 250 205 500 495v436H0Z"/>
+    <path class="line" d="M0 495 250 205 500 495"/>
+    <path class="line" d="M20 495v436M480 495v436"/>
+    <path class="line" d="M72 495 250 285 428 495" opacity=".4"/>
+    <path class="line" d="M250 168v70"/>
+    <path class="line" d="M226 194h48"/>
+    <path class="thin" d="M72 498h356"/>
+    <g>
+      <path class="line" d="M137 700v-80c0-34 28-62 62-62s62 28 62 62v80Z"/>
+      <path class="thin" d="M199 558v142M158 622h82"/>
+      <path class="line" d="M316 700v-72c0-29 24-53 53-53s53 24 53 53v72Z"/>
+      <path class="thin" d="M369 575v125M334 633h70"/>
+      <path class="line" d="M44 700v-72c0-29 24-53 53-53s53 24 53 53v72Z"/>
+      <path class="thin" d="M97 575v125M62 633h70"/>
+    </g>
+    <path class="thin" d="M83 305c32 24 79 33 128 30M310 335c46 2 86-8 121-31"/>
+  </g>
+
+  <!-- bell tower -->
+  <g transform="translate(650 84)">
+    <path class="wash" d="M145 1085V668h238v417Z"/>
+    <path class="line" d="M145 1085V668h238v417"/>
+    <path class="line" d="M169 668h188"/>
+    <path class="line" d="M202 668V414h125v254"/>
+    <path class="line" d="M193 414h144"/>
+    <path class="line" d="M214 414 264 92l50 322"/>
+    <path class="line" d="M264 45v62M244 70h40"/>
+    <path class="line" d="M239 278v-38c0-31 50-31 50 0v38Z"/>
+    <path class="thin" d="M226 462h76M226 530h76"/>
+    <path class="line" d="M219 585v-76c0-25 20-45 45-45s45 20 45 45v76"/>
+    <path class="line" d="M222 338h84"/>
+    <circle cx="264" cy="338" r="24" class="line"/>
+    <path class="line" d="M203 790v-80c0-34 28-62 62-62s62 28 62 62v80Z"/>
+    <path class="thin" d="M265 648v142M226 714h78"/>
+    <path class="line" d="M292 586c0 36-56 36-56 0 9 6 47 6 56 0Z" fill="#8f6d3e" opacity=".45"/>
+    <path class="thin" d="M264 585v-40"/>
+    <path class="line" d="M212 942h80v143h-80Z"/>
+    <path class="line" d="M252 954v-45M234 931h36"/>
+  </g>
+
+  <!-- palm and pine silhouettes from original scene -->
+  <g opacity=".55">
+    <path class="dark" d="M620 1040c-5-270 1-542 19-812l30 3c-26 268-34 538-25 809Z"/>
+    <g class="leaf2" transform="translate(646 215)">
+      <path d="M0 0c-94-50-147-120-163-210C-84-157-26-94 0 0Z"/>
+      <path d="M0 0c-36-112-17-208 56-286 1 113-13 209-56 286Z"/>
+      <path d="M0 0c54-110 127-176 219-198C158-98 91-37 0 0Z"/>
+      <path d="M0 0c100-55 190-66 269-33C171-4 80 15 0 0Z"/>
+      <path d="M0 0c-111 12-200 48-268 109C-167 122-78 88 0 0Z"/>
+      <path d="M0 0c57 65 124 106 202 123C126 53 59 17 0 0Z"/>
+    </g>
+    <path class="leaf2" d="M500 720c46-55 99-85 160-90-31 39-72 71-123 96 62-12 117-5 164 23-63 19-124 19-184 0 51 35 88 80 111 135-64-20-112-57-144-112 0 68-17 126-52 174-30-64-25-127 16-188-58 22-116 31-174 26 45-44 96-65 154-65Z"/>
+  </g>
+
+  <!-- foreground shrubs -->
+  <g transform="translate(0 845)">
+    <path class="leaf" d="M0 287c130-127 280-151 450-72 106-80 212-87 318-21 60-26 122-19 187 21v224H0Z"/>
+    <path class="leaf2" d="M85 311c40-88 100-136 180-144-29 53-74 99-136 137 89-16 159-4 211 37-79 32-155 30-227-7 68 56 104 119 108 190-75-31-124-85-148-161-22 66-60 117-113 154-4-73 23-136 81-189Z"/>
+    <path class="leaf2" d="M1140 402c31-66 80-99 146-101-28 51-62 84-103 99 64-8 116 7 155 44-69 18-119 12-151-17 24 48 32 95 22 142-47-37-69-82-66-136-35 36-77 59-126 70 21-45 62-79 123-101Z"/>
+  </g>
+
+  <!-- scout emblem, backpack, rope, flag -->
+  <g transform="translate(35 940)">
+    <circle cx="110" cy="112" r="93" fill="#d7c091" opacity=".55"/>
+    <circle cx="110" cy="112" r="93" class="scout" stroke-dasharray="17 9"/>
+    <path class="scout" fill="#8f6d3e" opacity=".55" d="M110 36c-42 58-40 103-9 136-26-44-67-41-78 1 35-1 55 11 70 34h34c15-23 35-35 70-34-11-42-52-45-78-1 31-33 33-78-9-136Z"/>
+    <path class="scout" d="M74 213c24 22 48 22 72 0M91 234c13 15 25 15 38 0"/>
+  </g>
+
+  <g transform="translate(1292 850)">
+    <path fill="#caa673" opacity=".72" stroke="#8f6d3e" stroke-width="5" stroke-linejoin="round" d="M74 154h145c34 0 63 28 63 63v173H12V217c0-35 28-63 62-63Z"/>
+    <path class="scout" d="M82 154v-45c0-31 118-31 118 0v45M62 240h170M62 317h170"/>
+    <path class="scout" d="M91 240v42M203 240v42M91 317v42M203 317v42"/>
+    <circle cx="360" cy="348" r="52" fill="#d7c091" opacity=".8" stroke="#8f6d3e" stroke-width="5"/>
+    <path class="scout" d="M360 307l12 31 34 4-26 20 8 33-28-18-29 18 9-33-27-20 34-4Z"/>
+    <path class="scout" d="M447 225c-28 47-33 91-13 132 50-61 91-71 151-55-43-58-88-83-138-77Z" fill="#78845e" opacity=".65"/>
+    <path class="scout" d="M435 366c88 2 171 20 248 55M448 395c78-12 154-11 228 4M452 421c74-26 145-39 213-39"/>
+    <path class="scout" d="M501 222V70M501 70c48 20 96 21 144 3v109c-48 18-96 17-144-3Z" fill="#6f7d58" opacity=".5"/>
+    <path class="scout" d="M561 112c-26 37-24 65-4 86-16-28-43-26-50 1 23-1 35 7 44 22h21c10-15 22-23 45-22-8-27-35-29-50-1 20-21 22-49-6-86Z"/>
+  </g>
+
+  <!-- subtle ground and road lines -->
+  <g class="thin">
+    <path d="M520 1135c240 34 499 32 747-8"/>
+    <path d="M640 1185c189 18 367 15 540-9"/>
+    <path d="M855 1110h128M1088 1106h82M742 1172h70"/>
+  </g>
+
+  <!-- dotted decorative accents -->
+  <g fill="#b08b55" opacity=".35">
+    <circle cx="54" cy="82" r="5"/><circle cx="94" cy="82" r="5"/><circle cx="134" cy="82" r="5"/><circle cx="174" cy="82" r="5"/>
+    <circle cx="54" cy="122" r="5"/><circle cx="94" cy="122" r="5"/><circle cx="134" cy="122" r="5"/><circle cx="174" cy="122" r="5"/>
+    <circle cx="54" cy="162" r="5"/><circle cx="94" cy="162" r="5"/><circle cx="134" cy="162" r="5"/><circle cx="174" cy="162" r="5"/>
+    <circle cx="1262" cy="922" r="5"/><circle cx="1302" cy="922" r="5"/><circle cx="1342" cy="922" r="5"/>
+    <circle cx="1262" cy="962" r="5"/><circle cx="1302" cy="962" r="5"/><circle cx="1342" cy="962" r="5"/>
+    <circle cx="1262" cy="1002" r="5"/><circle cx="1302" cy="1002" r="5"/><circle cx="1342" cy="1002" r="5"/>
   </g>
 </svg>
