@@ -6,6 +6,8 @@ import PrizeCard from '../components/PrizeCard'
 import WinConditionCard from '../components/WinConditionCard'
 import SpecialMessageCard from '../components/SpecialMessageCard'
 import RevealOverlay from '../components/RevealOverlay'
+import ReactionsOverlay from '../components/ReactionsOverlay'
+import ReactionBar from '../components/ReactionBar'
 import Confetti from '../components/Confetti'
 import StatusBanners from '../components/StatusBanners'
 import LoadingState from '../components/LoadingState'
@@ -21,7 +23,7 @@ export default function ViewerPage() {
   if (!state) return <LoadingState loading={loading} />
 
   return (
-    <div className="mx-auto flex min-h-screen w-full max-w-2xl flex-col gap-4 px-4 py-5">
+    <div className="mx-auto flex min-h-screen w-full max-w-2xl flex-col gap-4 px-4 pt-5 pb-28">
       <header className="flex flex-col items-center text-center">
         <img src="/logo.svg" alt="" className="h-16 w-16 animate-float drop-shadow-[0_0_18px_rgba(168,85,247,0.5)]" />
         <h1 className="mt-1 font-display text-2xl font-bold neon-text sm:text-3xl">🎉 Scouts Bingo</h1>
@@ -56,12 +58,14 @@ export default function ViewerPage() {
       </GlassCard>
 
       <Confetti trigger={state.animationNonce} />
+      <ReactionsOverlay />
       <RevealOverlay
         currentNumber={state.currentNumber}
         activeSticker={state.activeSticker}
         stickers={state.stickers}
         animationNonce={state.animationNonce}
       />
+      <ReactionBar />
     </div>
   )
 }
