@@ -179,6 +179,11 @@ export default function AdminControls({ state }: AdminControlsProps) {
             checked={state.isWinnerCheckMode}
             onChange={(v) => svc.setWinnerCheckMode(v)}
           />
+          <Toggle
+            label="💬 Viewer reactions"
+            checked={state.reactionsEnabled}
+            onChange={(v) => svc.setReactionsEnabled(v)}
+          />
         </div>
       </Section>
 

@@ -9,8 +9,10 @@ import { REACTION_EMOJIS, REACTION_THROTTLE_MS } from '../config/reactions'
 // the service's optimistic local channel.
 // ---------------------------------------------------------------------------
 
-export default function ReactionBar() {
+export default function ReactionBar({ enabled }: { enabled: boolean }) {
   const lastSent = useRef(0)
+
+  if (!enabled) return null
 
   const send = (emoji: string) => {
     const now = Date.now()

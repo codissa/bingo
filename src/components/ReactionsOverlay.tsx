@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ReactionsService, type IncomingReaction } from '../services/ReactionsService'
 import { REACTION_FLOAT_MS, REACTION_MAX_CONCURRENT } from '../config/reactions'
@@ -24,11 +24,21 @@ interface Floater extends IncomingReaction {
 
 let seq = 0
 
-export default function ReactionsOverlay() {
+export default function ReactionsOverlay({ enabled }: { enabled: boolean }) {
   const [floaters, setFloaters] = useState<Floater[]>([])
+
+  // Keep the latest `enabled` readable inside the (once-mounted) subscription
+  // callbacks without resubscribing on every toggle.
+  const enabledRef = useRef(enabled)
+  useEffect(() => {
+    enabledRef.current = enabled
+    // When the admin turns reactions off, clear anything still floating.
+    if (!enabled) setFloaters([])
+  }, [enabled])
 
   useEffect(() => {
     const spawn = (r: IncomingReaction) => {
+      if (!enabledRef.current) return
       const f: Floater = {
         ...r,
         key: `${r.id}-${(seq += 1)}`,

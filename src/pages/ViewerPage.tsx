@@ -58,14 +58,14 @@ export default function ViewerPage() {
       </GlassCard>
 
       <Confetti trigger={state.animationNonce} />
-      <ReactionsOverlay />
+      <ReactionsOverlay enabled={state.reactionsEnabled} />
       <RevealOverlay
         currentNumber={state.currentNumber}
         activeSticker={state.activeSticker}
         stickers={state.stickers}
         animationNonce={state.animationNonce}
       />
-      <ReactionBar />
+      <ReactionBar enabled={state.reactionsEnabled} />
     </div>
   )
 }

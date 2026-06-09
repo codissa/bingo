@@ -34,6 +34,9 @@ export interface GameState {
   /** Master switch: when false, NO sticker pops by itself (manual only). */
   autoStickersEnabled: boolean
 
+  /** Master switch: when false, viewers can't send floating emoji reactions. */
+  reactionsEnabled: boolean
+
   /** Bumped on every "event" so all screens animate in sync. */
   animationNonce: number
 
@@ -66,6 +69,7 @@ export const DEFAULT_GAME_STATE: GameState = {
 
   stickers: DEFAULT_STICKERS,
   autoStickersEnabled: true,
+  reactionsEnabled: true,
 
   animationNonce: 0,
 

@@ -64,7 +64,7 @@ export default function DisplayPage() {
       </div>
 
       <Confetti trigger={state.animationNonce} intensity="big" />
-      <ReactionsOverlay />
+      <ReactionsOverlay enabled={state.reactionsEnabled} />
       <RevealOverlay
         currentNumber={state.currentNumber}
         activeSticker={state.activeSticker}

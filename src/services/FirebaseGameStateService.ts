@@ -210,6 +210,9 @@ const saveStickers = (stickers: StickerConfig[]) => patch({ stickers })
 /** Master switch: turn automated (self-popping) stickers on/off. */
 const setAutoStickers = (v: boolean) => patch({ autoStickersEnabled: v })
 
+/** Master switch: allow/disallow viewers sending floating emoji reactions. */
+const setReactionsEnabled = (v: boolean) => patch({ reactionsEnabled: v })
+
 export const FirebaseGameStateService = {
   subscribe,
   ensureDoc,
@@ -231,4 +234,5 @@ export const FirebaseGameStateService = {
   setActiveSticker,
   saveStickers,
   setAutoStickers,
+  setReactionsEnabled,
 }
