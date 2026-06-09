@@ -171,6 +171,8 @@ async function resetBoard(): Promise<void> {
 async function resetEverything(): Promise<void> {
   await mutate((s) => ({
     ...DEFAULT_GAME_STATE,
+    stickers: s.stickers, // keep the admin's sticker setup
+    autoStickersEnabled: s.autoStickersEnabled, // keep the master switch too
     roundNumber: (s.roundNumber ?? 1) + 1,
     animationNonce: s.animationNonce + 1,
   }))

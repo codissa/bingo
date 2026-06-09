@@ -249,7 +249,7 @@ export default function AdminControls({ state }: AdminControlsProps) {
           <NeonButton
             variant="danger"
             onClick={() => {
-              if (confirm('RESET EVERYTHING? Clears the board AND all text, and starts a new round. Are you sure?'))
+              if (confirm('RESET EVERYTHING? Clears the board AND all text and starts a new round (keeps your stickers). Are you sure?'))
                 svc.resetEverything()
             }}
           >

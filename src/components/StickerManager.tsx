@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { FirebaseGameStateService as svc } from '../services/FirebaseGameStateService'
 import { makeStickerId, type StickerConfig, type StickerMode } from '../config/stickers'
+import { STICKER_IMAGES, stickerImageName } from '../config/stickerImages'
 import { MAX_NUMBER, MIN_NUMBER } from '../config/gameConfig'
 import GlassCard from './ui/GlassCard'
 import NeonButton from './ui/NeonButton'
@@ -16,6 +17,7 @@ interface EditableSticker {
   probability: string
   message: string
   mode: StickerMode
+  disco: boolean
 }
 
 function toEditable(s: StickerConfig): EditableSticker {
@@ -28,6 +30,7 @@ function toEditable(s: StickerConfig): EditableSticker {
     probability: s.probability != null ? String(s.probability) : '',
     message: s.message ?? '',
     mode: s.mode ?? 'manual',
+    disco: s.disco ?? false,
   }
 }
 
@@ -55,6 +58,7 @@ function toConfig(e: EditableSticker): StickerConfig {
     probability: parseProbability(e.probability),
     message: e.message.trim(),
     mode: e.mode,
+    disco: e.disco,
   }
 }
 
@@ -90,6 +94,11 @@ export default function StickerManager({
     setDraft((d) => d.map((s) => (s.id === id ? { ...s, mode } : s)))
   }
 
+  const setDisco = (id: string, disco: boolean) => {
+    setDirty(true)
+    setDraft((d) => d.map((s) => (s.id === id ? { ...s, disco } : s)))
+  }
+
   const addSticker = () => {
     setDirty(true)
     setDraft((d) => [
@@ -103,6 +112,7 @@ export default function StickerManager({
         probability: '',
         message: '',
         mode: 'manual',
+        disco: false,
       },
     ])
   }
@@ -214,31 +224,69 @@ export default function StickerManager({
               </label>
               <label className="col-span-2 block">
                 <span className="mb-0.5 block text-[11px] text-white/40">
-                  Image path (optional — overrides emoji)
+                  Image (optional — overrides emoji)
                 </span>
-                <input
-                  value={s.image}
-                  onChange={(e) => update(s.id, 'image', e.target.value)}
-                  placeholder="/stickers/your-image.png"
-                  className={inputCls}
-                />
+                <div className="flex items-center gap-2">
+                  <select
+                    value={s.image}
+                    onChange={(e) => update(s.id, 'image', e.target.value)}
+                    className={`${inputCls} flex-1`}
+                  >
+                    <option value="">— Emoji only —</option>
+                    {/* Keep a stale/renamed value visible instead of blanking it. */}
+                    {s.image && !STICKER_IMAGES.includes(s.image) && (
+                      <option value={s.image}>{stickerImageName(s.image)} (missing?)</option>
+                    )}
+                    {STICKER_IMAGES.map((path) => (
+                      <option key={path} value={path}>
+                        {stickerImageName(path)}
+                      </option>
+                    ))}
+                  </select>
+                  {s.image && (
+                    <img
+                      src={s.image}
+                      alt=""
+                      className="h-12 w-12 shrink-0 rounded-lg border border-white/15 bg-black/30 object-contain p-1"
+                      onError={(e) => {
+                        e.currentTarget.style.visibility = 'hidden'
+                      }}
+                    />
+                  )}
+                </div>
               </label>
             </div>
 
-            {/* Auto / Manual segmented toggle */}
-            <div className="mt-2 inline-flex overflow-hidden rounded-lg ring-1 ring-white/15">
-              {(['auto', 'manual'] as StickerMode[]).map((m) => (
-                <button
-                  key={m}
-                  type="button"
-                  onClick={() => setMode(s.id, m)}
-                  className={`px-3 py-1 text-sm capitalize ${
-                    s.mode === m ? 'bg-neon-purple text-white' : 'bg-white/5 text-white/50'
-                  }`}
-                >
-                  {m === 'auto' ? 'Auto (regular)' : 'Manual'}
-                </button>
-              ))}
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              {/* Auto / Manual segmented toggle */}
+              <div className="inline-flex overflow-hidden rounded-lg ring-1 ring-white/15">
+                {(['auto', 'manual'] as StickerMode[]).map((m) => (
+                  <button
+                    key={m}
+                    type="button"
+                    onClick={() => setMode(s.id, m)}
+                    className={`px-3 py-1 text-sm capitalize ${
+                      s.mode === m ? 'bg-neon-purple text-white' : 'bg-white/5 text-white/50'
+                    }`}
+                  >
+                    {m === 'auto' ? 'Auto (regular)' : 'Manual'}
+                  </button>
+                ))}
+              </div>
+
+              {/* Disco (bingo-win) toggle */}
+              <button
+                type="button"
+                onClick={() => setDisco(s.id, !s.disco)}
+                className={`rounded-lg px-3 py-1 text-sm font-semibold ring-1 transition ${
+                  s.disco
+                    ? 'bg-neon-pink/20 text-neon-pink ring-neon-pink/50'
+                    : 'bg-white/5 text-white/50 ring-white/15'
+                }`}
+                title="Play the disco animation when shown — for the bingo-win sticker"
+              >
+                🪩 Disco
+              </button>
             </div>
 
             {activeSticker === s.id && (

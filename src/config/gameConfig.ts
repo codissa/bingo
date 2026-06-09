@@ -20,6 +20,9 @@ export const GAME_DOC_ID = 'state'
 /** How long a sticker popup stays on screen (ms) before auto-dismissing. */
 export const STICKER_DURATION_MS = 4500
 
+/** How long a special disco (bingo-win) sticker stays on screen (ms). */
+export const DISCO_DURATION_MS = 7000
+
 /** Classic BINGO column letters. */
 export const BINGO_LETTERS = ['B', 'I', 'N', 'G', 'O'] as const
 

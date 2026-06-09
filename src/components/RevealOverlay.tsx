@@ -1,9 +1,20 @@
 import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
+import confetti from 'canvas-confetti'
 import { getStickerById, type StickerConfig } from '../config/stickers'
-import { STICKER_DURATION_MS } from '../config/gameConfig'
+import { DISCO_DURATION_MS, STICKER_DURATION_MS } from '../config/gameConfig'
 import { letterFor } from '../lib/bingo'
 import { usePreloadImages } from '../lib/usePreloadImages'
+
+/** Neon palette shared with the confetti burst. */
+const DISCO_COLORS = ['#ff3db5', '#a855f7', '#38bdf8', '#34d399', '#fde047']
+
+/** Extra confetti when a disco (bingo-win) sticker pops, on top of the normal burst. */
+function fireDiscoConfetti() {
+  confetti({ particleCount: 200, spread: 130, startVelocity: 55, origin: { y: 0.6 }, colors: DISCO_COLORS })
+  confetti({ particleCount: 100, angle: 60, spread: 80, origin: { x: 0 }, colors: DISCO_COLORS })
+  confetti({ particleCount: 100, angle: 120, spread: 80, origin: { x: 1 }, colors: DISCO_COLORS })
+}
 
 interface RevealOverlayProps {
   currentNumber: number | null
@@ -74,11 +85,17 @@ export default function RevealOverlay({
     setImgFailed(false)
     setImgLoaded(false)
     setReveal({ number: revealNumber, sticker })
+
+    // The disco (bingo-win) sticker gets an extra confetti blast and a longer stay.
+    if (sticker?.disco) fireDiscoConfetti()
+    const duration = sticker
+      ? sticker.disco
+        ? DISCO_DURATION_MS
+        : STICKER_DURATION_MS
+      : NUMBER_ONLY_MS
+
     if (timer.current) clearTimeout(timer.current)
-    timer.current = setTimeout(
-      () => setReveal(null),
-      sticker ? STICKER_DURATION_MS : NUMBER_ONLY_MS,
-    )
+    timer.current = setTimeout(() => setReveal(null), duration)
   }, [animationNonce, activeSticker, currentNumber, stickers])
 
   useEffect(() => () => void (timer.current && clearTimeout(timer.current)), [])
@@ -86,6 +103,7 @@ export default function RevealOverlay({
   const huge = size === 'huge'
   const sticker = reveal?.sticker ?? null
   const useImage = sticker?.image && !imgFailed
+  const isDisco = sticker?.disco === true
 
   return (
     <AnimatePresence>
@@ -100,6 +118,9 @@ export default function RevealOverlay({
           {/* Soft scrim — page recedes during the pop, then returns. */}
           <div className={`absolute inset-0 backdrop-blur-sm ${huge ? 'bg-ink/60' : 'bg-ink/40'}`} />
 
+          {/* Disco lights — spinning multi-colour wash over the scrim. */}
+          {isDisco && <div className="disco-lights" />}
+
           <div className="relative flex flex-col items-center">
             <div className="flex flex-col items-center gap-3 sm:flex-row sm:gap-8">
               {/* Sticker (above on mobile, beside on >= sm) */}
@@ -110,37 +131,51 @@ export default function RevealOverlay({
                   exit={{ scale: 0, rotate: 12 }}
                   transition={{ type: 'spring', stiffness: 260, damping: 14, delay: 0.05 }}
                 >
-                  {useImage ? (
-                    <img
-                      // If the image is already cached (the usual case once
-                      // preloaded), onLoad may fire before React attaches its
-                      // handler — so check `complete` on mount too, else it'd
-                      // stay invisible forever.
-                      ref={(el) => {
-                        if (el?.complete) setImgLoaded(true)
-                      }}
-                      src={sticker.image}
-                      alt={sticker.label}
-                      decoding="async"
-                      onLoad={() => setImgLoaded(true)}
-                      onError={() => setImgFailed(true)}
-                      style={{
-                        opacity: imgLoaded ? 1 : 0,
-                        transition: 'opacity 150ms ease-out',
-                      }}
-                      className={`object-contain drop-shadow-[0_0_30px_rgba(168,85,247,0.6)] ${
-                        huge ? 'h-64 w-64' : 'h-36 w-36 sm:h-44 sm:w-44'
-                      }`}
-                    />
-                  ) : (
-                    <span
-                      className={`block drop-shadow-[0_0_30px_rgba(168,85,247,0.6)] ${
-                        huge ? 'text-[14rem] leading-none' : 'text-[6rem] leading-none sm:text-[7rem]'
-                      }`}
-                    >
-                      {sticker.emoji ?? '🎉'}
-                    </span>
-                  )}
+                  {/* Disco: spin + pulse forever after the pop-in. Regular stickers
+                      stay still (inner div has no animation). */}
+                  <motion.div
+                    animate={isDisco ? { rotate: [0, 360], scale: [1, 1.15, 1] } : undefined}
+                    transition={
+                      isDisco
+                        ? {
+                            rotate: { repeat: Infinity, duration: 1.4, ease: 'linear' },
+                            scale: { repeat: Infinity, duration: 0.7, ease: 'easeInOut' },
+                          }
+                        : undefined
+                    }
+                  >
+                    {useImage ? (
+                      <img
+                        // If the image is already cached (the usual case once
+                        // preloaded), onLoad may fire before React attaches its
+                        // handler — so check `complete` on mount too, else it'd
+                        // stay invisible forever.
+                        ref={(el) => {
+                          if (el?.complete) setImgLoaded(true)
+                        }}
+                        src={sticker.image}
+                        alt={sticker.label}
+                        decoding="async"
+                        onLoad={() => setImgLoaded(true)}
+                        onError={() => setImgFailed(true)}
+                        style={{
+                          opacity: imgLoaded ? 1 : 0,
+                          transition: 'opacity 150ms ease-out',
+                        }}
+                        className={`object-contain drop-shadow-[0_0_30px_rgba(168,85,247,0.6)] ${
+                          isDisco ? 'animate-disco-hue' : ''
+                        } ${huge ? 'h-64 w-64' : 'h-36 w-36 sm:h-44 sm:w-44'}`}
+                      />
+                    ) : (
+                      <span
+                        className={`block drop-shadow-[0_0_30px_rgba(168,85,247,0.6)] ${
+                          isDisco ? 'animate-disco-hue' : ''
+                        } ${huge ? 'text-[14rem] leading-none' : 'text-[6rem] leading-none sm:text-[7rem]'}`}
+                      >
+                        {sticker.emoji ?? '🎉'}
+                      </span>
+                    )}
+                  </motion.div>
                 </motion.div>
               )}
 

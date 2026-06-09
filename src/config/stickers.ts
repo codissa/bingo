@@ -40,6 +40,8 @@ export interface StickerConfig {
   message?: string
   /** 'auto' = pops on its own (triggers/random). 'manual' = button only. */
   mode: StickerMode
+  /** Play the extra-special disco animation when shown — use for the bingo-win sticker. */
+  disco?: boolean
 }
 
 export const DEFAULT_STICKERS: StickerConfig[] = [
