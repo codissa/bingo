@@ -4,6 +4,7 @@ import RecentNumbers from '../components/RecentNumbers'
 import NumberBoard from '../components/NumberBoard'
 import PrizeCard from '../components/PrizeCard'
 import WinConditionCard from '../components/WinConditionCard'
+import WinPatternCard from '../components/WinPatternCard'
 import SpecialMessageCard from '../components/SpecialMessageCard'
 import RevealOverlay from '../components/RevealOverlay'
 import ReactionsOverlay from '../components/ReactionsOverlay'
@@ -56,6 +57,13 @@ export default function DisplayPage() {
           {state.showPrize && <PrizeCard prizeText={state.prizeText} size="huge" />}
           {state.showWinCondition && (
             <WinConditionCard winConditionText={state.winConditionText} size="huge" />
+          )}
+          {state.showWinPattern && state.winPatternMask !== 0 && (
+            <WinPatternCard
+              mask={state.winPatternMask}
+              patternId={state.winPatternId}
+              size="huge"
+            />
           )}
           {state.showSpecialMessage && (
             <SpecialMessageCard specialMessage={state.specialMessage} size="huge" />

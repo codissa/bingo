@@ -14,6 +14,8 @@ import { DEFAULT_GAME_STATE, normalizeGameState, type GameState } from '../types
 import { computeRecent, lastOf, pickRandomUncalled } from '../lib/bingo'
 import { pickStickerForNumber } from '../lib/stickerPicker'
 import type { StickerConfig } from '../config/stickers'
+import { makeWinPatternId, type WinPreset } from '../config/winConditions'
+import type { SavedWinPattern } from '../types/gameState'
 
 // ---------------------------------------------------------------------------
 // FirebaseGameStateService
@@ -188,6 +190,43 @@ const setPrizeText = (v: string) => patch({ prizeText: v })
 const setShowPrize = (v: boolean) => patch({ showPrize: v })
 const setWinConditionText = (v: string) => patch({ winConditionText: v })
 const setShowWinCondition = (v: boolean) => patch({ showWinCondition: v })
+
+/** Pick a preset: write id + resolved mask + auto-fill the text in one go. */
+const selectWinPreset = (p: WinPreset) =>
+  patch({ winPatternId: p.id, winPatternMask: p.mask, winConditionText: p.text })
+
+/** Save a hand-built mask as a NAMED custom pattern and apply it. */
+const saveCustomWinPattern = (name: string, mask: number) =>
+  mutate((s) => {
+    const entry: SavedWinPattern = {
+      id: makeWinPatternId(name),
+      name: name.trim() || 'My pattern',
+      mask: mask & 0x1ffffff,
+    }
+    return {
+      customWinPatterns: [...s.customWinPatterns, entry],
+      winPatternId: entry.id,
+      winPatternMask: entry.mask,
+    }
+  })
+
+/** Apply an already-saved custom pattern (leaves the win text untouched). */
+const selectCustomWinPattern = (p: SavedWinPattern) =>
+  patch({ winPatternId: p.id, winPatternMask: p.mask })
+
+/** Delete a saved custom pattern; clears the active pattern if it was selected. */
+const deleteCustomWinPattern = (id: string) =>
+  mutate((s) => ({
+    customWinPatterns: s.customWinPatterns.filter((p) => p.id !== id),
+    ...(s.winPatternId === id ? { winPatternId: null, winPatternMask: 0 } : {}),
+  }))
+
+/** Toggle the animated pattern card on the display/viewer screens. */
+const setShowWinPattern = (v: boolean) => patch({ showWinPattern: v })
+
+/** Clear any pattern (back to text-only mode). */
+const clearWinPattern = () =>
+  patch({ winPatternId: null, winPatternMask: 0, showWinPattern: false })
 const setSpecialMessage = (v: string) => patch({ specialMessage: v })
 const setShowSpecialMessage = (v: boolean) => patch({ showSpecialMessage: v })
 const setWinnerCheckMode = (v: boolean) => patch({ isWinnerCheckMode: v })
@@ -227,6 +266,12 @@ export const FirebaseGameStateService = {
   setShowPrize,
   setWinConditionText,
   setShowWinCondition,
+  selectWinPreset,
+  saveCustomWinPattern,
+  selectCustomWinPattern,
+  deleteCustomWinPattern,
+  setShowWinPattern,
+  clearWinPattern,
   setSpecialMessage,
   setShowSpecialMessage,
   setWinnerCheckMode,

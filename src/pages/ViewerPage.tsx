@@ -4,6 +4,7 @@ import RecentNumbers from '../components/RecentNumbers'
 import NumberBoard from '../components/NumberBoard'
 import PrizeCard from '../components/PrizeCard'
 import WinConditionCard from '../components/WinConditionCard'
+import WinPatternCard from '../components/WinPatternCard'
 import SpecialMessageCard from '../components/SpecialMessageCard'
 import RevealOverlay from '../components/RevealOverlay'
 import ReactionsOverlay from '../components/ReactionsOverlay'
@@ -43,6 +44,9 @@ export default function ViewerPage() {
 
       {state.showPrize && <PrizeCard prizeText={state.prizeText} />}
       {state.showWinCondition && <WinConditionCard winConditionText={state.winConditionText} />}
+      {state.showWinPattern && state.winPatternMask !== 0 && (
+        <WinPatternCard mask={state.winPatternMask} patternId={state.winPatternId} />
+      )}
       {state.showSpecialMessage && <SpecialMessageCard specialMessage={state.specialMessage} />}
 
       <GlassCard>

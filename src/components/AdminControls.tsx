@@ -4,6 +4,9 @@ import type { GameState } from '../types/gameState'
 import GlassCard from './ui/GlassCard'
 import NeonButton from './ui/NeonButton'
 import StickerManager from './StickerManager'
+import PatternThumb from './PatternThumb'
+import WinPatternBuilder from './WinPatternBuilder'
+import { WIN_PRESETS } from '../config/winConditions'
 
 interface AdminControlsProps {
   state: GameState
@@ -202,16 +205,101 @@ export default function AdminControls({ state }: AdminControlsProps) {
       {/* Win condition */}
       <Section title="Win Condition">
         <div className="grid gap-3">
+          {/* Preset gallery */}
+          <div>
+            <span className="mb-2 block text-xs text-white/50">Popular patterns</span>
+            <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
+              {WIN_PRESETS.map((p) => {
+                const selected = state.winPatternId === p.id
+                return (
+                  <button
+                    key={p.id}
+                    type="button"
+                    onClick={() => svc.selectWinPreset(p)}
+                    title={p.text}
+                    className={`flex flex-col items-center gap-1.5 rounded-xl border p-2 transition ${
+                      selected
+                        ? 'border-neon-pink/70 bg-neon-pink/10 shadow-neon-pink'
+                        : 'border-white/10 bg-white/5 hover:bg-white/10'
+                    }`}
+                  >
+                    <PatternThumb mask={p.mask} />
+                    <span className="text-center text-[0.65rem] leading-tight text-white/70">
+                      {p.label}
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* Saved custom patterns */}
+          {state.customWinPatterns.length > 0 && (
+            <div>
+              <span className="mb-2 block text-xs text-white/50">My patterns</span>
+              <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
+                {state.customWinPatterns.map((p) => {
+                  const selected = state.winPatternId === p.id
+                  return (
+                    <div
+                      key={p.id}
+                      className={`relative flex flex-col items-center gap-1.5 rounded-xl border p-2 transition ${
+                        selected
+                          ? 'border-neon-pink/70 bg-neon-pink/10 shadow-neon-pink'
+                          : 'border-white/10 bg-white/5 hover:bg-white/10'
+                      }`}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => svc.selectCustomWinPattern(p)}
+                        title={p.name}
+                        className="flex flex-col items-center gap-1.5"
+                      >
+                        <PatternThumb mask={p.mask} />
+                        <span className="max-w-[5.5rem] truncate text-center text-[0.65rem] leading-tight text-white/70">
+                          {p.name}
+                        </span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => svc.deleteCustomWinPattern(p.id)}
+                        title="Delete pattern"
+                        className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-ink text-xs text-rose-400 ring-1 ring-white/15 hover:bg-rose-500/30"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Custom builder */}
+          <WinPatternBuilder seedMask={state.winPatternMask} />
+
+          {/* Editable headline text */}
           <SyncedField
-            label="What you need to win"
+            label="What you need to win (auto-filled from preset — edit freely)"
             remoteValue={state.winConditionText}
             onCommit={(v) => svc.setWinConditionText(v)}
           />
+
           <Toggle
             label="Show win condition"
             checked={state.showWinCondition}
             onChange={(v) => svc.setShowWinCondition(v)}
           />
+          <Toggle
+            label="Show pattern card"
+            checked={state.showWinPattern}
+            onChange={(v) => svc.setShowWinPattern(v)}
+          />
+          {state.winPatternMask !== 0 && (
+            <NeonButton variant="ghost" onClick={() => svc.clearWinPattern()}>
+              ✕ Clear pattern
+            </NeonButton>
+          )}
         </div>
       </Section>
 

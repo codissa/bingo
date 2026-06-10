@@ -1,6 +1,14 @@
 import type { Timestamp, FieldValue } from 'firebase/firestore'
 import { DEFAULT_STICKERS, type StickerConfig } from '../config/stickers'
 
+/** A named, reusable custom win pattern saved by the admin. */
+export interface SavedWinPattern {
+  id: string
+  name: string
+  /** 25-bit row-major mask. */
+  mask: number
+}
+
 // ---------------------------------------------------------------------------
 // The single source of truth for the whole game, stored at game/state.
 // Every screen subscribes to this document.
@@ -21,6 +29,15 @@ export interface GameState {
 
   winConditionText: string
   showWinCondition: boolean
+
+  /** Chosen win-pattern preset id, 'custom', or null (legacy text-only mode). */
+  winPatternId: string | null
+  /** 25-bit row-major mask of highlighted cells (bit r*5+c). 0 = no pattern. */
+  winPatternMask: number
+  /** When true, render the animated mini bingo card under the win text. */
+  showWinPattern: boolean
+  /** Admin's named, reusable custom patterns. */
+  customWinPatterns: SavedWinPattern[]
 
   specialMessage: string
   showSpecialMessage: boolean
@@ -59,8 +76,13 @@ export const DEFAULT_GAME_STATE: GameState = {
   prizeText: '',
   showPrize: false,
 
-  winConditionText: 'Full house — every number on your card!',
+  winConditionText: 'לוח מלא — כל המספרים בכרטיס שלכם!',
   showWinCondition: false,
+
+  winPatternId: null,
+  winPatternMask: 0,
+  showWinPattern: false,
+  customWinPatterns: [],
 
   specialMessage: '',
   showSpecialMessage: false,
@@ -99,6 +121,11 @@ export function normalizeGameState(raw: Partial<GameState> | null | undefined): 
     undoneNumbers: Array.isArray(r.undoneNumbers) ? r.undoneNumbers : [],
     recentNumbers: Array.isArray(r.recentNumbers) ? r.recentNumbers : [],
     stickers,
+    winPatternMask:
+      typeof r.winPatternMask === 'number' && Number.isFinite(r.winPatternMask)
+        ? r.winPatternMask & 0x1ffffff // clamp to 25 bits
+        : 0,
+    customWinPatterns: Array.isArray(r.customWinPatterns) ? r.customWinPatterns : [],
   }
 }
 

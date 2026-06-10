@@ -80,4 +80,33 @@
       transform: rotate(360deg);
     }
   }
+
+  /* A soft warm glow that flows along a win pattern. Every on-cell runs this
+     same gentle sine; one full cycle is spread across the pattern (per-cell
+     animation-delay set inline) so a single low-contrast crest glides through
+     and loops seamlessly — calm, liquid, and safe for photosensitive viewers
+     (no scale jump, no bright spike, luminance modulates at ~0.3 Hz). */
+  .animate-win-flow {
+    animation: win-flow var(--win-flow-loop, 3200ms) ease-in-out infinite;
+    will-change: background-color, box-shadow;
+  }
+
+  @keyframes win-flow {
+    0%,
+    100% {
+      background-color: rgba(251, 146, 60, 0.14);
+      box-shadow: 0 0 6px 1px rgba(251, 146, 60, 0.22);
+    }
+    50% {
+      background-color: rgba(253, 186, 116, 0.42);
+      box-shadow: 0 0 15px 3px rgba(251, 146, 60, 0.5);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-win-flow {
+      animation: none;
+      background-color: rgba(251, 146, 60, 0.3);
+    }
+  }
 }
