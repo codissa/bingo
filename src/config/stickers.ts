@@ -1,24 +1,26 @@
 // ---------------------------------------------------------------------------
 // STICKER CONFIG  🎉
 //
-// These are the DEFAULTS that seed the game the first time it runs. After that,
-// you can edit everything live from the Admin screen (Sticker & Number Manager):
-//   • add stickers / emojis
+// Stickers ARE the photos in  public/stickers/  — nothing is hard-coded here.
+// Drop a picture into that folder and it becomes a sticker automatically:
+//   • it seeds the game on first run (DEFAULT_STICKERS, below), and
+//   • it shows up live in the Admin screen even on an existing game — the
+//     Sticker Manager reconciles the saved list against the folder on load
+//     (see reconcileStickersWithFolder). Delete a photo and its sticker goes
+//     away too.
+//
+// From the Admin screen you still tune everything per sticker, live:
 //   • choose which NUMBERS trigger which sticker
 //   • set each sticker to "Auto" (pops by itself) or "Manual" (button only)
 //   • flip the master "Automated stickers" switch off entirely
 //
-// To use your own picture instead of an emoji:
-//   1. Drop an image into  public/stickers/   (png / jpg / gif / svg)
-//   2. Set the sticker's `image` to e.g. '/stickers/akela-dab.png'
-//   3. If the image is missing, the `emoji` shows as a fallback.
-//
 // Every sticker image is preloaded into the browser cache up front (see
-// usePreloadImages) so reveals are instant — added stickers are picked up
-// automatically. Loading is handled, but KEEP UPLOADS SMALL: a multi-MB photo
-// still costs bandwidth on first page load. Aim for a few hundred KB max and
-// a display size around 256px; SVGs are ideal (~1 KB).
+// usePreloadImages) so reveals are instant. KEEP UPLOADS SMALL: a multi-MB
+// photo still costs bandwidth on first page load. Aim for a few hundred KB max
+// and a display size around 256px.
 // ---------------------------------------------------------------------------
+
+import { STICKER_IMAGES, stickerImageName } from './stickerImages'
 
 /** How a sticker is allowed to fire. */
 export type StickerMode = 'auto' | 'manual'
@@ -44,68 +46,63 @@ export interface StickerConfig {
   disco?: boolean
 }
 
-export const DEFAULT_STICKERS: StickerConfig[] = [
-  {
-    id: 'campfire',
-    label: 'Campfire',
-    emoji: '🔥',
-    image: '/stickers/campfire.svg',
-    triggerNumbers: [7, 70],
-    probability: 0.08,
-    message: 'Gather round! 🔥',
-    mode: 'auto',
-  },
-  {
-    id: 'badge',
-    label: 'Merit Badge',
-    emoji: '🏅',
-    image: '/stickers/badge.svg',
-    triggerNumbers: [1, 10],
-    probability: 0.06,
-    message: 'Badge unlocked!',
-    mode: 'auto',
-  },
-  {
-    id: 'owl',
-    label: 'Wise Owl',
-    emoji: '🦉',
-    image: '/stickers/owl.svg',
-    triggerNumbers: [22],
-    probability: 0.05,
-    message: 'Twit twoo, who knew?',
-    mode: 'auto',
-  },
-  {
-    id: 'tent',
-    label: 'Camp Tent',
-    emoji: '⛺',
-    image: '/stickers/tent.svg',
-    triggerNumbers: [13, 30],
-    probability: 0.05,
-    message: 'Pitch perfect!',
-    mode: 'auto',
-  },
-  {
-    id: 'star',
-    label: 'Gold Star',
-    emoji: '⭐',
-    image: '/stickers/star.svg',
-    triggerNumbers: [5, 50],
-    probability: 0.06,
-    message: 'Top scout!',
-    mode: 'auto',
-  },
-  {
-    id: 'poop',
-    label: 'Oh No',
-    emoji: '💩',
-    image: '/stickers/poop.svg',
-    triggerNumbers: [2],
-    probability: 0.05,
-    message: 'Number twoooo… 💩',
+/** Pretty label from a path: '/stickers/salimJack.png' -> 'Salim Jack'. */
+function labelFromImage(path: string): string {
+  const base = stickerImageName(path).replace(/\.[^.]+$/, '') // strip extension
+  const words = base
+    .replace(/[-_]+/g, ' ') // dashes / underscores -> spaces
+    .replace(/([a-z0-9])([A-Z])/g, '$1 $2') // camelCase -> spaced
+    .trim()
+  return words.replace(/\b\w/g, (c) => c.toUpperCase())
+}
+
+/** Stable id for a photo sticker, derived from its filename. */
+function idFromImage(path: string): string {
+  const base = stickerImageName(path).replace(/\.[^.]+$/, '')
+  const slug = base.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+  return `photo-${slug || 'sticker'}`
+}
+
+/** Turn one folder photo into a sensible default sticker (admin tunes the rest). */
+function stickerForImage(path: string): StickerConfig {
+  return {
+    id: idFromImage(path),
+    label: labelFromImage(path),
+    emoji: '📸',
+    image: path,
+    triggerNumbers: [],
+    probability: 0,
+    message: '',
     mode: 'manual',
-  },
-]
+  }
+}
+
+/** Seed list = one sticker per photo currently in public/stickers/. */
+export const DEFAULT_STICKERS: StickerConfig[] = STICKER_IMAGES.map(stickerForImage)
+
+/**
+ * Make a saved sticker list mirror the photos in public/stickers/:
+ *   • DROP any sticker that points to a photo file that's gone (the old camp
+ *     stickers land here once their SVGs are deleted),
+ *   • ADD a default sticker for any new photo not yet represented.
+ * Emoji-only stickers added by hand from the Admin screen (no image) are left
+ * alone, as are the per-sticker settings (triggers, mode, message, disco) of
+ * the photos that remain. Returns the SAME array reference when nothing
+ * changed, so callers can cheaply skip a needless Firestore write.
+ */
+export function reconcileStickersWithFolder(
+  stickers: StickerConfig[],
+  images: string[] = STICKER_IMAGES,
+): StickerConfig[] {
+  if (images.length === 0) return stickers // safety: never wipe on an empty glob
+  const available = new Set(images)
+  // Keep emoji-only stickers (no image); drop ones whose photo file is missing.
+  const kept = stickers.filter((s) => !s.image || available.has(s.image))
+  const used = new Set(kept.map((s) => s.image))
+  const added = images.filter((p) => !used.has(p)).map(stickerForImage)
+  const changed = added.length > 0 || kept.length !== stickers.length
+  return changed ? [...kept, ...added] : stickers
+}
 
 /** Find a sticker by id within a given list (defaults to the seed list). */
 export function getStickerById(

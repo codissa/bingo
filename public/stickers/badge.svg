@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
-  <circle cx="100" cy="100" r="96" fill="#0a0820" stroke="#fde047" stroke-width="3"/>
-  <g transform="translate(100 96)">
-    <polygon points="0,-58 14,-18 56,-18 22,8 34,50 0,24 -34,50 -22,8 -56,-18 -14,-18" fill="#fde047"/>
-    <circle cx="0" cy="-4" r="22" fill="#0a0820"/>
-    <text x="0" y="4" text-anchor="middle" font-family="sans-serif" font-size="22" font-weight="bold" fill="#fde047">✓</text>
-  </g>
-  <text x="100" y="194" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#ffffff" opacity="0.5">merit badge (placeholder)</text>
-</svg>

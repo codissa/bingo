@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react'
 import { FirebaseGameStateService as svc } from '../services/FirebaseGameStateService'
-import { makeStickerId, type StickerConfig, type StickerMode } from '../config/stickers'
+import {
+  makeStickerId,
+  reconcileStickersWithFolder,
+  type StickerConfig,
+  type StickerMode,
+} from '../config/stickers'
 import { STICKER_IMAGES, stickerImageName } from '../config/stickerImages'
 import { MAX_NUMBER, MIN_NUMBER } from '../config/gameConfig'
 import GlassCard from './ui/GlassCard'
@@ -82,6 +87,16 @@ export default function StickerManager({
   // Re-sync from Firestore only when we have no unsaved local edits.
   useEffect(() => {
     if (!dirty) setDraft(stickers.map(toEditable))
+  }, [stickers, dirty])
+
+  // Keep the sticker list mirrored to the photos in public/stickers/: a newly
+  // added photo becomes a sticker, a deleted one disappears — no manual editing.
+  // Only runs with no unsaved edits, and converges (a reconciled list returns
+  // the same reference, so this won't loop on the next snapshot).
+  useEffect(() => {
+    if (dirty) return
+    const reconciled = reconcileStickersWithFolder(stickers)
+    if (reconciled !== stickers) svc.saveStickers(reconciled)
   }, [stickers, dirty])
 
   const update = (id: string, field: keyof EditableSticker, value: string) => {
