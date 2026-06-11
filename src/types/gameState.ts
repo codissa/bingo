@@ -51,6 +51,13 @@ export interface GameState {
   /** Master switch: when false, NO sticker pops by itself (manual only). */
   autoStickersEnabled: boolean
 
+  /**
+   * Global 0..1 "lucky chance": one roll per called number that, on a hit,
+   * pops a RANDOM auto sticker. The single knob that drives surprise stickers
+   * for the whole set (per-sticker `probability` still works on top of it).
+   */
+  globalLuckyChance: number
+
   /** Master switch: when false, viewers can't send floating emoji reactions. */
   reactionsEnabled: boolean
 
@@ -91,6 +98,7 @@ export const DEFAULT_GAME_STATE: GameState = {
 
   stickers: DEFAULT_STICKERS,
   autoStickersEnabled: true,
+  globalLuckyChance: 0,
   reactionsEnabled: true,
 
   animationNonce: 0,
@@ -121,6 +129,10 @@ export function normalizeGameState(raw: Partial<GameState> | null | undefined): 
     undoneNumbers: Array.isArray(r.undoneNumbers) ? r.undoneNumbers : [],
     recentNumbers: Array.isArray(r.recentNumbers) ? r.recentNumbers : [],
     stickers,
+    globalLuckyChance:
+      typeof r.globalLuckyChance === 'number' && Number.isFinite(r.globalLuckyChance)
+        ? Math.min(1, Math.max(0, r.globalLuckyChance))
+        : 0,
     winPatternMask:
       typeof r.winPatternMask === 'number' && Number.isFinite(r.winPatternMask)
         ? r.winPatternMask & 0x1ffffff // clamp to 25 bits

@@ -324,6 +324,7 @@ export default function AdminControls({ state }: AdminControlsProps) {
       <StickerManager
         stickers={state.stickers}
         autoStickersEnabled={state.autoStickersEnabled}
+        globalLuckyChance={state.globalLuckyChance}
         activeSticker={state.activeSticker}
       />
 

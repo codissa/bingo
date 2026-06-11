@@ -73,16 +73,29 @@ const inputCls =
 interface StickerManagerProps {
   stickers: StickerConfig[]
   autoStickersEnabled: boolean
+  globalLuckyChance: number
   activeSticker: string | null
 }
 
 export default function StickerManager({
   stickers,
   autoStickersEnabled,
+  globalLuckyChance,
   activeSticker,
 }: StickerManagerProps) {
   const [draft, setDraft] = useState<EditableSticker[]>(() => stickers.map(toEditable))
   const [dirty, setDirty] = useState(false)
+
+  // Global lucky-chance lives in its own draft so typing "0." feels natural;
+  // it saves on blur (parsed & clamped) without touching the per-sticker grid.
+  const [luckyDraft, setLuckyDraft] = useState(() =>
+    globalLuckyChance ? String(globalLuckyChance) : '',
+  )
+  useEffect(() => {
+    setLuckyDraft(globalLuckyChance ? String(globalLuckyChance) : '')
+  }, [globalLuckyChance])
+
+  const commitLucky = () => svc.setGlobalLuckyChance(parseProbability(luckyDraft))
 
   // Re-sync from Firestore only when we have no unsaved local edits.
   useEffect(() => {
@@ -172,6 +185,25 @@ export default function StickerManager({
         trigger numbers or at random); <b>Manual</b> stickers only pop from the “Show” button.
         Turn off “Automated” to stop all self-popping stickers.
       </p>
+
+      {/* Global lucky chance — one knob that pops a RANDOM sticker on any number. */}
+      <label className="mb-3 flex flex-wrap items-center gap-2 rounded-xl border border-neon-purple/30 bg-neon-purple/10 p-3">
+        <span className="text-lg">🍀</span>
+        <span className="flex-1 text-sm text-white/80">
+          <b>Global lucky chance</b> — chance that a random sticker pops on <i>any</i> number
+        </span>
+        <input
+          value={luckyDraft}
+          onChange={(e) => setLuckyDraft(e.target.value)}
+          onBlur={commitLucky}
+          onKeyDown={(e) => e.key === 'Enter' && commitLucky()}
+          placeholder="e.g. 0.1"
+          inputMode="decimal"
+          className={`${inputCls} w-24`}
+          aria-label="Global lucky chance (0–1)"
+        />
+        <span className="text-xs text-white/40">0–1</span>
+      </label>
 
       <div className="grid gap-3">
         {draft.map((s) => (

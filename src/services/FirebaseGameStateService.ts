@@ -79,7 +79,7 @@ async function callNumber(n: number): Promise<void> {
   await mutate((s) => {
     if (s.calledNumbers.includes(n)) return {}
     const calledNumbers = [...s.calledNumbers, n]
-    const sticker = pickStickerForNumber(n, s.stickers, s.autoStickersEnabled)
+    const sticker = pickStickerForNumber(n, s.stickers, s.autoStickersEnabled, s.globalLuckyChance)
     return {
       calledNumbers,
       undoneNumbers: [], // calling a number clears the redo stack
@@ -143,7 +143,7 @@ async function randomNumber(): Promise<void> {
     const n = pickRandomUncalled(s.calledNumbers, MIN_NUMBER, MAX_NUMBER)
     if (n == null) return {}
     const calledNumbers = [...s.calledNumbers, n]
-    const sticker = pickStickerForNumber(n, s.stickers, s.autoStickersEnabled)
+    const sticker = pickStickerForNumber(n, s.stickers, s.autoStickersEnabled, s.globalLuckyChance)
     return {
       calledNumbers,
       undoneNumbers: [],
@@ -175,6 +175,7 @@ async function resetEverything(): Promise<void> {
     ...DEFAULT_GAME_STATE,
     stickers: s.stickers, // keep the admin's sticker setup
     autoStickersEnabled: s.autoStickersEnabled, // keep the master switch too
+    globalLuckyChance: s.globalLuckyChance, // keep the global lucky-chance setting
     roundNumber: (s.roundNumber ?? 1) + 1,
     animationNonce: s.animationNonce + 1,
   }))
@@ -249,6 +250,10 @@ const saveStickers = (stickers: StickerConfig[]) => patch({ stickers })
 /** Master switch: turn automated (self-popping) stickers on/off. */
 const setAutoStickers = (v: boolean) => patch({ autoStickersEnabled: v })
 
+/** Global 0..1 lucky chance that a random auto sticker pops on any number. */
+const setGlobalLuckyChance = (v: number) =>
+  patch({ globalLuckyChance: Math.min(1, Math.max(0, Number.isFinite(v) ? v : 0)) })
+
 /** Master switch: allow/disallow viewers sending floating emoji reactions. */
 const setReactionsEnabled = (v: boolean) => patch({ reactionsEnabled: v })
 
@@ -279,5 +284,6 @@ export const FirebaseGameStateService = {
   setActiveSticker,
   saveStickers,
   setAutoStickers,
+  setGlobalLuckyChance,
   setReactionsEnabled,
 }
