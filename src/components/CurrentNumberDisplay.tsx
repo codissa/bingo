@@ -31,7 +31,7 @@ export default function CurrentNumberDisplay({
 
       <div
         className={`relative flex items-center justify-center ${
-          huge ? 'h-[42vh] min-h-[260px]' : 'h-44 sm:h-56'
+          huge ? 'h-[30vh] min-h-[200px]' : 'h-44 sm:h-56'
         }`}
       >
         <AnimatePresence mode="popLayout">
@@ -45,7 +45,7 @@ export default function CurrentNumberDisplay({
           >
             <span
               className={`block select-none font-display font-extrabold leading-none neon-text drop-shadow-[0_0_35px_rgba(168,85,247,0.55)] ${
-                huge ? 'text-[34vh]' : 'text-[8rem] sm:text-[11rem]'
+                huge ? 'text-[26vh]' : 'text-[8rem] sm:text-[11rem]'
               }`}
             >
               {currentNumber ?? '—'}

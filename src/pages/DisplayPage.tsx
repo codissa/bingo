@@ -30,9 +30,9 @@ export default function DisplayPage() {
 
       <StatusBanners state={state} size="huge" />
 
-      <div className="grid min-h-0 flex-1 grid-cols-1 items-stretch gap-6 lg:grid-cols-[1.4fr_1fr]">
-        {/* Left: the star of the show */}
-        <div className="flex min-h-0 flex-col items-center justify-center gap-6">
+      <div className="flex min-h-0 flex-1 flex-col gap-4">
+        {/* Over: the star of the show + recent, side by side to save vertical space */}
+        <div className="flex shrink-0 flex-wrap items-center justify-center gap-x-12 gap-y-4">
           <CurrentNumberDisplay
             currentNumber={state.currentNumber}
             animationNonce={state.animationNonce}
@@ -41,36 +41,43 @@ export default function DisplayPage() {
           <RecentNumbers recentNumbers={state.recentNumbers} size="huge" />
         </div>
 
-        {/* Right: board + any active cards */}
-        <div className="flex min-h-0 flex-col gap-4">
-          <div className="glass flex min-h-0 flex-1 flex-col p-4">
-            <div className="mb-2 text-center font-display text-xl uppercase tracking-widest text-white/50">
-              Called · {state.calledNumbers.length}
-            </div>
-            <div className="min-h-0 flex-1">
-              <NumberBoard
-                calledNumbers={state.calledNumbers}
-                currentNumber={state.currentNumber}
-                animationNonce={state.animationNonce}
-                compact
-              />
-            </div>
+        {/* The wide board — takes the maximum remaining space, full width */}
+        <div className="glass flex min-h-0 flex-1 flex-col p-4">
+          <div className="mb-2 text-center font-display text-xl uppercase tracking-widest text-white/50">
+            Called · {state.calledNumbers.length}
           </div>
-          {state.showPrize && <PrizeCard prizeText={state.prizeText} size="huge" />}
-          {state.showWinCondition && (
-            <WinConditionCard winConditionText={state.winConditionText} size="huge" />
-          )}
-          {state.showWinPattern && state.winPatternMask !== 0 && (
-            <WinPatternCard
-              mask={state.winPatternMask}
-              patternId={state.winPatternId}
-              size="huge"
+          <div className="min-h-0 flex-1">
+            <NumberBoard
+              calledNumbers={state.calledNumbers}
+              currentNumber={state.currentNumber}
+              animationNonce={state.animationNonce}
+              compact
             />
-          )}
-          {state.showSpecialMessage && (
-            <SpecialMessageCard specialMessage={state.specialMessage} size="huge" />
-          )}
+          </div>
         </div>
+
+        {/* Under: any active cards, side by side */}
+        {(state.showPrize ||
+          state.showWinCondition ||
+          (state.showWinPattern && state.winPatternMask !== 0) ||
+          state.showSpecialMessage) && (
+          <div className="flex shrink-0 flex-wrap items-stretch justify-center gap-4">
+            {state.showPrize && <PrizeCard prizeText={state.prizeText} size="huge" />}
+            {state.showWinCondition && (
+              <WinConditionCard winConditionText={state.winConditionText} size="huge" />
+            )}
+            {state.showWinPattern && state.winPatternMask !== 0 && (
+              <WinPatternCard
+                mask={state.winPatternMask}
+                patternId={state.winPatternId}
+                size="huge"
+              />
+            )}
+            {state.showSpecialMessage && (
+              <SpecialMessageCard specialMessage={state.specialMessage} size="huge" />
+            )}
+          </div>
+        )}
       </div>
 
       <Confetti trigger={state.animationNonce} intensity="big" />
