@@ -47,7 +47,7 @@ export default function NumberBoard({
               Opaque backdrop masks the numbers passing underneath. */}
           <div
             className={`sticky top-0 z-20 flex items-center justify-center rounded-lg bg-ink/95 font-display font-extrabold backdrop-blur-sm ${
-              compact || dense ? 'py-1 text-xl' : 'py-1.5 text-2xl sm:text-3xl'
+              dense ? 'py-1 text-xl' : compact ? 'py-1 text-3xl sm:text-4xl' : 'py-1.5 text-2xl sm:text-3xl'
             } ${LETTER_COLORS[ci]}`}
           >
             {column.letter}
@@ -79,7 +79,7 @@ export default function NumberBoard({
                 className={[
                   'relative flex items-center justify-center rounded-lg font-bold tabular-nums transition',
                   dense ? 'h-9 sm:h-10' : compact ? 'min-h-0 flex-1' : 'aspect-square',
-                  dense ? 'text-xs sm:text-sm' : compact ? 'text-base sm:text-xl' : 'text-sm sm:text-lg',
+                  dense ? 'text-xs sm:text-sm' : compact ? 'text-3xl leading-none sm:text-5xl' : 'text-sm sm:text-lg',
                   interactive ? 'cursor-pointer' : 'cursor-default',
                   isCurrent
                     ? 'bg-gradient-to-br from-neon-pink to-neon-purple text-white shadow-neon-pink ring-2 ring-white/70'
