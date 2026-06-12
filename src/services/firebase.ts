@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app'
-import { getFirestore } from 'firebase/firestore'
+import { initializeFirestore } from 'firebase/firestore'
 
 // ---------------------------------------------------------------------------
 // Firebase init from environment variables (see .env.example).
@@ -18,7 +18,14 @@ const firebaseConfig = {
 }
 
 export const firebaseApp = initializeApp(firebaseConfig)
-export const db = getFirestore(firebaseApp)
+
+// Some phones sit behind proxies/VPNs/WebViews that BUFFER Firestore's streaming
+// connection, so live updates arrive one action late until the next write flushes
+// them. Auto-detect long polling spots the buffering and switches to immediate
+// long-poll delivery, keeping every device in sync.
+export const db = initializeFirestore(firebaseApp, {
+  experimentalAutoDetectLongPolling: true,
+})
 
 /** Quick sanity flag — true once the basic config is present. */
 export const isFirebaseConfigured = Boolean(
