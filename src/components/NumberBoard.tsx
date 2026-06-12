@@ -40,9 +40,9 @@ export default function NumberBoard({
   const gap = dense ? 'gap-1' : 'gap-1.5 sm:gap-2'
 
   return (
-    <div className={`grid grid-cols-5 ${gap}`}>
+    <div className={`grid grid-cols-5 ${gap} ${compact ? 'h-full' : ''}`}>
       {BINGO_COLUMNS.map((column, ci) => (
-        <div key={column.letter} className={`flex flex-col ${gap}`}>
+        <div key={column.letter} className={`flex flex-col ${gap} ${compact ? 'min-h-0' : ''}`}>
           {/* Column letter header — sticky so it stays pinned while numbers scroll under it.
               Opaque backdrop masks the numbers passing underneath. */}
           <div
@@ -78,8 +78,8 @@ export default function NumberBoard({
                   : {})}
                 className={[
                   'relative flex items-center justify-center rounded-lg font-bold tabular-nums transition',
-                  dense ? 'h-9 sm:h-10' : 'aspect-square',
-                  dense ? 'text-xs sm:text-sm' : compact ? 'text-sm sm:text-base' : 'text-sm sm:text-lg',
+                  dense ? 'h-9 sm:h-10' : compact ? 'min-h-0 flex-1' : 'aspect-square',
+                  dense ? 'text-xs sm:text-sm' : compact ? 'text-base sm:text-xl' : 'text-sm sm:text-lg',
                   interactive ? 'cursor-pointer' : 'cursor-default',
                   isCurrent
                     ? 'bg-gradient-to-br from-neon-pink to-neon-purple text-white shadow-neon-pink ring-2 ring-white/70'
@@ -87,7 +87,9 @@ export default function NumberBoard({
                       ? 'bg-neon-purple/30 text-white ring-1 ring-neon-purple/60'
                       : interactive
                         ? 'bg-white/5 text-white/70 hover:bg-white/15 hover:text-white'
-                        : 'bg-white/5 text-white/25',
+                        : compact
+                          ? 'bg-white/10 text-white/80'
+                          : 'bg-white/5 text-white/25',
                 ].join(' ')}
               >
                 {n}

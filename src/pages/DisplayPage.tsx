@@ -22,7 +22,7 @@ export default function DisplayPage() {
   if (!state) return <LoadingState loading={loading} />
 
   return (
-    <div className="flex min-h-screen flex-col gap-4 p-4 lg:p-8">
+    <div className="flex h-screen flex-col gap-4 overflow-hidden p-4 lg:p-8">
       <header className="flex items-center justify-center gap-3">
         <img src="/logo.svg" alt="" className="h-12 w-12 animate-float lg:h-16 lg:w-16" />
         <h1 className="font-display text-3xl font-bold neon-text lg:text-4xl">Scouts Bingo</h1>
@@ -30,9 +30,9 @@ export default function DisplayPage() {
 
       <StatusBanners state={state} size="huge" />
 
-      <div className="grid flex-1 grid-cols-1 items-center gap-6 lg:grid-cols-[1.4fr_1fr]">
+      <div className="grid min-h-0 flex-1 grid-cols-1 items-stretch gap-6 lg:grid-cols-[1.4fr_1fr]">
         {/* Left: the star of the show */}
-        <div className="flex flex-col items-center justify-center gap-6">
+        <div className="flex min-h-0 flex-col items-center justify-center gap-6">
           <CurrentNumberDisplay
             currentNumber={state.currentNumber}
             animationNonce={state.animationNonce}
@@ -42,17 +42,19 @@ export default function DisplayPage() {
         </div>
 
         {/* Right: board + any active cards */}
-        <div className="flex flex-col gap-4">
-          <div className="glass p-4">
+        <div className="flex min-h-0 flex-col gap-4">
+          <div className="glass flex min-h-0 flex-1 flex-col p-4">
             <div className="mb-2 text-center font-display text-xl uppercase tracking-widest text-white/50">
               Called · {state.calledNumbers.length}
             </div>
-            <NumberBoard
-              calledNumbers={state.calledNumbers}
-              currentNumber={state.currentNumber}
-              animationNonce={state.animationNonce}
-              compact
-            />
+            <div className="min-h-0 flex-1">
+              <NumberBoard
+                calledNumbers={state.calledNumbers}
+                currentNumber={state.currentNumber}
+                animationNonce={state.animationNonce}
+                compact
+              />
+            </div>
           </div>
           {state.showPrize && <PrizeCard prizeText={state.prizeText} size="huge" />}
           {state.showWinCondition && (
